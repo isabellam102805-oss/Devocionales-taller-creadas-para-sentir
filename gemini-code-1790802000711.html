@@ -368,437 +368,283 @@
 
     </main>
 
-    <script>
+  <script>
+        const googleSheetsUrl = "https://script.google.com/macros/s/AKfycbxr8iny2uVz-QSrN4LnMSVBjjHwt7l3Odi--QduYBnnNXDKUgPxr7kncgEf4zc8ESuLtg/exec"; // Pega tu enlace de Google Apps Script entre comillas
         const CLAVE_ADMIN = "1234";
 
-let appData = JSON.parse(localStorage.getItem('tallerData3Semanas')) || {
-    googleSheetsUrl: "",
-    logoSrc: "https://cdn-icons-png.flaticon.com/512/616/616490.png",
-    headerTitulo: "REUNIÓN DE MUJERES",
-    headerSubtitulo: "Creadas para sentir",
-    tituloReflexion: "Reflexión",
-    tituloOracion: "Oración del Día",
-    tituloPractica: "Aplicación Práctica del Día",
-    tituloJournaling: "Manos a la obra (journaling)",
-    btnGuardarText: "Enviar Mis Respuestas",
-    btnDescargarText: "Descargar Copia",
-    muroTitulo: "Muro de Bendiciones",
-    muroSubtitulo: "Deja un mensaje o petición para el grupo de mujeres",
-    muroPosts: [],
-    currentDayIndex: 0,
-    days: [
-        {
-            nombreDia: "Día 1: Creadas para sentir",
-            fecha: "Lunes, 05 de Octubre",
-            ubicacion: "CALLE ZIGIA 28, MADRID",
-            titulo: "REUNIÓN DE MUJERES",
-            subtitulo: "Creadas para sentir",
-            audioTitulo: "Alabanza del Día 1",
-            audioLink: "https://youtube.com",
-            versiculo: "Con amor eterno te he amado; por tanto, te prolongué mi misericordia.",
-            cita: "Jeremías 31:3",
-            reflexion: "Bienvenida al Módulo 1. Nuestras emociones no son un defecto que debamos arreglar, son señales que Dios diseñó para que las pastoreemos...",
-            oracion: "Señor, abre mi corazón durante este taller para entender tu propósito en mi vida.",
-            mostrarPractica: true,
-            practica: "Identifica hoy 3 emociones que hayas sentido durante la mañana y nómbralas en oración delante de Dios.",
-            journalingDesc: "Tómate unos minutos en silencio para reflexionar y escribir tus respuestas de hoy.",
-            pieIzquierda: "TALLER DEVOCIONAL",
-            pieDerecha: "Creadas con amor",
-            questions: [
-                "¿Qué te enseña Dios hoy a través de esta lectura?",
-                "¿Cuál es tu petición de oración especial para hoy?"
+        let appData = JSON.parse(localStorage.getItem('tallerData3Semanas')) || {
+            googleSheetsUrl: googleSheetsUrl,
+            logoSrc: "https://i.pinimg.com/736x/87/42/bb/8742bbf06294d1f2b5a153bd28b758da.jpg",
+            headerTitulo: "REUNIÓN DE MUJERES",
+            headerSubtitulo: "Creadas para sentir",
+            tituloReflexion: "Reflexión",
+            tituloOracion: "Oración del Día",
+            tituloPractica: "Aplicación Práctica del Día",
+            tituloJournaling: "Manos a la obra (journaling)",
+            btnGuardarText: "Enviar Mis Respuestas",
+            btnDescargarText: "Descargar Copia",
+            muroTitulo: "Muro de Bendiciones",
+            muroSubtitulo: "Deja un mensaje o petición para el grupo de mujeres",
+            muroPosts: [],
+            currentDayIndex: 0,
+            days: [
+                {
+                    nombreDia: "Día 1: Creadas para sentir",
+                    fecha: "Lunes, 05 de Octubre",
+                    ubicacion: "CALLE ZIGIA 28, MADRID",
+                    titulo: "REUNIÓN DE MUJERES",
+                    subtitulo: "Creadas para sentir",
+                    audioTitulo: "Alabanza del Día 1",
+                    audioLink: "https://youtube.com",
+                    versiculo: "Con amor eterno te he amado; por tanto, te prolongué mi misericordia.",
+                    cita: "Jeremías 31:3",
+                    reflexion: "Bienvenida al Módulo 1. Nuestras emociones no son un defecto que debamos arreglar, son señales que Dios diseñó para que las pastoreemos...",
+                    oracion: "Señor, abre mi corazón durante este taller para entender tu propósito en mi vida.",
+                    mostrarPractica: true,
+                    practica: "Identifica hoy 3 emociones que hayas sentido durante la mañana y nómbralas en oración delante de Dios.",
+                    journalingDesc: "Tómate unos minutos en silencio para reflexionar y escribir tus respuestas de hoy.",
+                    pieIzquierda: "TALLER DEVOCIONAL",
+                    pieDerecha: "Creadas con amor",
+                    questions: [
+                        "¿Qué te enseña Dios hoy a través de esta lectura?",
+                        "¿Cuál es tu petición de oración especial para hoy?"
+                    ]
+                }
             ]
-        }
-    ]
-};
-
-if(!appData.muroPosts) appData.muroPosts = [];
-
-let currentActiveDay = 0;
-
-document.addEventListener('DOMContentLoaded', () => {
-    renderDaySelector();
-    loadDayContent(0);
-    renderMuroPosts();
-});
-
-function renderDaySelector() {
-    const selector = document.getElementById('daySelector');
-    selector.innerHTML = '';
-    appData.days.forEach((day, index) => {
-        const opt = document.createElement('option');
-        opt.value = index;
-        opt.textContent = day.nombreDia || `Día ${index + 1}`;
-        selector.appendChild(opt);
-    });
-}
-
-function loadDayContent(index) {
-    currentActiveDay = parseInt(index);
-    const data = appData.days[currentActiveDay];
-
-    const headerT = appData.headerTitulo || "REUNIÓN DE MUJERES";
-    const headerS = appData.headerSubtitulo || "Creadas para sentir";
-
-    if(appData.logoSrc) {
-        document.getElementById('logoApp').src = appData.logoSrc;
-        document.getElementById('faviconApp').href = appData.logoSrc;
-    }
-
-    document.getElementById('headerTitulo').textContent = headerT;
-    document.getElementById('headerSubtitulo').textContent = headerS;
-    document.getElementById('dispTitulo').textContent = data.titulo || headerT;
-    document.getElementById('dispSubtitulo').textContent = data.subtitulo || headerS;
-
-    document.getElementById('muroTituloDisp').textContent = appData.muroTitulo || "Muro de Bendiciones";
-    document.getElementById('muroSubtituloDisp').textContent = appData.muroSubtitulo || "Deja un mensaje o petición para el grupo de mujeres";
-
-    document.getElementById('dispTituloReflexion').innerHTML = `<i class="fa-solid fa-book-open-reader"></i> ${appData.tituloReflexion || 'Reflexión'}`;
-    document.getElementById('dispTituloOracion').innerHTML = `<i class="fa-solid fa-hands-praying"></i> ${appData.tituloOracion || 'Oración del Día'}`;
-    document.getElementById('dispTituloPractica').innerHTML = `<i class="fa-solid fa-shoe-prints"></i> ${appData.tituloPractica || 'Aplicación Práctica del Día'}`;
-    document.getElementById('dispTituloJournaling').innerHTML = `<i class="fa-solid fa-feather-pointed"></i> ${appData.tituloJournaling || 'Manos a la obra (journaling)'}`;
-
-    document.getElementById('btnGuardarResp').innerHTML = `<i class="fa-solid fa-paper-plane"></i> ${appData.btnGuardarText || 'Enviar Mis Respuestas'}`;
-    document.getElementById('btnDescargarResp').innerHTML = `<i class="fa-solid fa-download"></i> ${appData.btnDescargarText || 'Descargar Copia'}`;
-
-    document.getElementById('dispNombreDia').textContent = data.nombreDia;
-    document.getElementById('dispFecha').textContent = data.fecha;
-    document.getElementById('dispUbicacion').textContent = data.ubicacion || "CALLE ZIGIA 28, MADRID";
-
-    document.getElementById('dispAudioTitulo').textContent = data.audioTitulo;
-    document.getElementById('dispAudioLink').href = data.audioLink || "#";
-
-    document.getElementById('dispVersiculo').textContent = `"${data.versiculo}"`;
-    document.getElementById('dispCita').textContent = `— ${data.cita}`;
-    document.getElementById('dispReflexion').textContent = data.reflexion;
-    document.getElementById('dispOracion').textContent = data.oracion;
-
-    const practicaBox = document.getElementById('dispPracticaContainer');
-    if (data.mostrarPractica && data.practica) {
-        practicaBox.classList.remove('hidden');
-        document.getElementById('dispPractica').textContent = data.practica;
-    } else {
-        practicaBox.classList.add('hidden');
-    }
-
-    document.getElementById('dispJournalingDesc').textContent = data.journalingDesc || "Tómate unos minutos en silencio para reflexionar.";
-    document.getElementById('dispPieIzquierda').textContent = data.pieIzquierda || "TALLER DEVOCIONAL";
-    document.getElementById('dispPieDerecha').textContent = data.pieDerecha || "Creadas con amor";
-
-    renderQuestions();
-}
-
-function renderQuestions() {
-    const container = document.getElementById('dynamicQuestionsList');
-    container.innerHTML = '';
-    const day = appData.days[currentActiveDay];
-    const savedAns = JSON.parse(localStorage.getItem(`ans_day_${currentActiveDay}`)) || {};
-
-    day.questions.forEach((q, idx) => {
-        const div = document.createElement('div');
-        div.innerHTML = `
-            <label class="block font-semibold text-sm mb-1 text-[#3D2D27]">${idx + 1}. ${q}</label>
-            <textarea id="ans_${idx}" rows="3" class="w-full p-3 text-sm bg-[#F7F3EE] border border-[#C4A792]/50 rounded-lg focus:outline-none focus:border-[#8C3A1D]" placeholder="Escribe tu respuesta aquí...">${savedAns[idx] || ''}</textarea>
-        `;
-        container.appendChild(div);
-    });
-}
-
-async function saveAndSendToSheets() {
-    const day = appData.days[currentActiveDay];
-    const answers = {};
-    day.questions.forEach((q, idx) => {
-        answers[idx] = document.getElementById(`ans_${idx}`).value;
-    });
-    localStorage.setItem(`ans_day_${currentActiveDay}`, JSON.stringify(answers));
-
-    if (appData.googleSheetsUrl) {
-        try {
-            await fetch(appData.googleSheetsUrl, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    fecha: new Date().toLocaleString(),
-                    devocional: day.nombreDia,
-                    respuestas: answers
-                })
-            });
-            alert('¡Tus respuestas han sido enviadas con éxito!');
-        } catch(e) {
-            alert('Respuestas guardadas localmente en tu dispositivo.');
-        }
-    } else {
-        alert('¡Respuestas guardadas localmente!');
-    }
-}
-
-function downloadAnswers() {
-    const day = appData.days[currentActiveDay];
-    const savedAns = JSON.parse(localStorage.getItem(`ans_day_${currentActiveDay}`)) || {};
-
-    let content = `DEVOCIONAL: ${day.nombreDia}\nFECHA: ${day.fecha}\n\n`;
-    day.questions.forEach((q, idx) => {
-        content += `${idx + 1}. ${q}\nRESPUESTA: ${savedAns[idx] || 'Sin respuesta'}\n\n`;
-    });
-
-    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = `${day.nombreDia}_Respuestas.txt`;
-    a.click();
-}
-
-function togglePracticaEdit(checked) {
-    document.getElementById('editPracticaBox').classList.toggle('hidden', !checked);
-}
-
-function solicitarAccesoAdmin() {
-    let password = prompt("Ingresa la contraseña de administradora:");
-    if (password === CLAVE_ADMIN) {
-        switchView('admin');
-    } else if (password !== null) {
-        alert("Contraseña incorrecta.");
-    }
-}
-
-function switchView(viewName) {
-    document.getElementById('viewParticipante').classList.add('hidden');
-    document.getElementById('viewMuro').classList.add('hidden');
-    document.getElementById('viewAdmin').classList.add('hidden');
-
-    if(viewName === 'participante') document.getElementById('viewParticipante').classList.remove('hidden');
-    if(viewName === 'muro') {
-        document.getElementById('viewMuro').classList.remove('hidden');
-        renderMuroPosts();
-    }
-    if(viewName === 'admin') {
-        document.getElementById('viewAdmin').classList.remove('hidden');
-        cargarCamposAdmin();
-    }
-}
-
-function cargarCamposAdmin() {
-    const d = appData.days[currentActiveDay];
-    document.getElementById('editSheetsUrl').value = appData.googleSheetsUrl || "";
-    document.getElementById('editHeaderTitulo').value = appData.headerTitulo || "REUNIÓN DE MUJERES";
-    document.getElementById('editHeaderSubtitulo').value = appData.headerSubtitulo || "Creadas para sentir";
-
-    document.getElementById('editTituloReflexion').value = appData.tituloReflexion || "Reflexión";
-    document.getElementById('editTituloOracion').value = appData.tituloOracion || "Oración del Día";
-    document.getElementById('editTituloPractica').value = appData.tituloPractica || "Aplicación Práctica del Día";
-    document.getElementById('editTituloJournaling').value = appData.tituloJournaling || "Manos a la obra (journaling)";
-    document.getElementById('editBtnGuardar').value = appData.btnGuardarText || "Enviar Mis Respuestas";
-    document.getElementById('editBtnDescargar').value = appData.btnDescargarText || "Descargar Copia";
-
-    document.getElementById('editMuroTitulo').value = appData.muroTitulo || "Muro de Bendiciones";
-    document.getElementById('editMuroSubtitulo').value = appData.muroSubtitulo || "Deja un mensaje o petición para el grupo de mujeres";
-
-    document.getElementById('editNombreDia').value = d.nombreDia;
-    document.getElementById('editUbicacion').value = d.ubicacion || "CALLE ZIGIA 28, MADRID";
-    document.getElementById('editFecha').value = d.fecha;
-    document.getElementById('editAudioTitulo').value = d.audioTitulo || "";
-    document.getElementById('editAudioLink').value = d.audioLink || "";
-    document.getElementById('editVersiculo').value = d.versiculo;
-    document.getElementById('editCita').value = d.cita;
-    document.getElementById('editReflexion').value = d.reflexion;
-    document.getElementById('editOracion').value = d.oracion;
-
-    document.getElementById('editCheckPractica').checked = d.mostrarPractica || false;
-    document.getElementById('editPracticaText').value = d.practica || '';
-    togglePracticaEdit(d.mostrarPractica);
-
-    document.getElementById('editJournalingDesc').value = d.journalingDesc || "";
-    document.getElementById('editPieIzquierda').value = d.pieIzquierda || "TALLER DEVOCIONAL";
-    document.getElementById('editPieDerecha').value = d.pieDerecha || "Creadas con amor";
-
-    renderAdminQuestions();
-    renderAdminMuroList();
-}
-
-function renderAdminQuestions() {
-    const container = document.getElementById('adminQuestionsList');
-    container.innerHTML = '';
-    const d = appData.days[currentActiveDay];
-    d.questions.forEach((q, idx) => {
-        const div = document.createElement('div');
-        div.className = "flex items-center space-x-2";
-        div.innerHTML = `
-            <input type="text" value="${q}" onchange="appData.days[${currentActiveDay}].questions[${idx}] = this.value" class="flex-1 p-2 text-xs border rounded-lg">
-            <button onclick="removeQuestion(${idx})" class="bg-red-100 text-red-600 px-3 py-2 rounded-lg text-xs font-bold"><i class="fa-solid fa-trash"></i></button>
-        `;
-        container.appendChild(div);
-    });
-}
-
-function renderAdminMuroList() {
-    const container = document.getElementById('adminMuroList');
-    container.innerHTML = '';
-    if(!appData.muroPosts || appData.muroPosts.length === 0) {
-        container.innerHTML = `<p class="text-xs text-gray-500 italic">No hay mensajes publicados en el muro.</p>`;
-        return;
-    }
-    appData.muroPosts.forEach((post, idx) => {
-        const div = document.createElement('div');
-        div.className = "flex items-center justify-between p-2 bg-white border rounded-lg text-xs gap-2";
-        div.innerHTML = `
-            <div class="truncate">
-                <span class="font-bold text-[#8C3A1D]">${post.nombre}:</span>
-                <span class="text-gray-700 ml-1">${post.mensaje}</span>
-            </div>
-            <button onclick="deleteMuroPost(${idx})" class="bg-red-100 text-red-600 px-2 py-1 rounded text-xs font-bold shrink-0">
-                <i class="fa-solid fa-trash"></i>
-            </button>
-        `;
-        container.appendChild(div);
-    });
-}
-
-function deleteMuroPost(idx) {
-    if(confirm("¿Estás segura de eliminar este mensaje del muro?")) {
-        appData.muroPosts.splice(idx, 1);
-        localStorage.setItem('tallerData3Semanas', JSON.stringify(appData));
-        renderAdminMuroList();
-        renderMuroPosts();
-    }
-}
-
-function addAdminQuestion() {
-    appData.days[currentActiveDay].questions.push("Nueva pregunta de journaling");
-    renderAdminQuestions();
-}
-
-function removeQuestion(idx) {
-    appData.days[currentActiveDay].questions.splice(idx, 1);
-    renderAdminQuestions();
-}
-
-function createNewDay() {
-    const count = appData.days.length + 1;
-    appData.days.push({
-        nombreDia: `Día ${count}: Nuevo Devocional`,
-        fecha: "Fecha a programar",
-        ubicacion: "CALLE ZIGIA 28, MADRID",
-        titulo: appData.headerTitulo || "REUNIÓN DE MUJERES",
-        subtitulo: appData.headerSubtitulo || "Creadas para sentir",
-        audioTitulo: "Audio del Día",
-        audioLink: "https://youtube.com",
-        versiculo: "Versículo clave",
-        cita: "Cita Bíblica",
-        reflexion: "Escribe aquí la reflexión...",
-        oracion: "Escribe la oración...",
-        mostrarPractica: false,
-        practica: "",
-        journalingDesc: "Tómate unos minutos en silencio para reflexionar.",
-        pieIzquierda: "TALLER DEVOCIONAL",
-        pieDerecha: "Creadas con amor",
-        questions: ["1. Pregunta de aplicación"]
-    });
-
-    renderDaySelector();
-    loadDayContent(appData.days.length - 1);
-    cargarCamposAdmin();
-    alert(`¡Se ha creado el Día ${count}! Ya puedes editarlo.`);
-}
-
-function saveAdminChanges() {
-    appData.googleSheetsUrl = document.getElementById('editSheetsUrl').value;
-    appData.headerTitulo = document.getElementById('editHeaderTitulo').value;
-    appData.headerSubtitulo = document.getElementById('editHeaderSubtitulo').value;
-
-    appData.tituloReflexion = document.getElementById('editTituloReflexion').value;
-    appData.tituloOracion = document.getElementById('editTituloOracion').value;
-    appData.tituloPractica = document.getElementById('editTituloPractica').value;
-    appData.tituloJournaling = document.getElementById('editTituloJournaling').value;
-    appData.btnGuardarText = document.getElementById('editBtnGuardar').value;
-    appData.btnDescargarText = document.getElementById('editBtnDescargar').value;
-
-    appData.muroTitulo = document.getElementById('editMuroTitulo').value;
-    appData.muroSubtitulo = document.getElementById('editMuroSubtitulo').value;
-
-    const d = appData.days[currentActiveDay];
-    d.nombreDia = document.getElementById('editNombreDia').value;
-    d.ubicacion = document.getElementById('editUbicacion').value;
-    d.fecha = document.getElementById('editFecha').value;
-    d.audioTitulo = document.getElementById('editAudioTitulo').value;
-    d.audioLink = document.getElementById('editAudioLink').value;
-    d.versiculo = document.getElementById('editVersiculo').value;
-    d.cita = document.getElementById('editCita').value;
-    d.reflexion = document.getElementById('editReflexion').value;
-    d.oracion = document.getElementById('editOracion').value;
-
-    d.mostrarPractica = document.getElementById('editCheckPractica').checked;
-    d.practica = document.getElementById('editPracticaText').value;
-
-    d.journalingDesc = document.getElementById('editJournalingDesc').value;
-    d.pieIzquierda = document.getElementById('editPieIzquierda').value;
-    d.pieDerecha = document.getElementById('editPieDerecha').value;
-
-    d.titulo = appData.headerTitulo;
-    d.subtitulo = appData.headerSubtitulo;
-
-    localStorage.setItem('tallerData3Semanas', JSON.stringify(appData));
-    renderDaySelector();
-    loadDayContent(currentActiveDay);
-
-    alert("¡Todos los cambios y ajustes han sido guardados!");
-    switchView('participante');
-}
-
-function handleImageUpload(e) {
-    const file = e.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(evt) {
-            const base64Img = evt.target.result;
-            appData.logoSrc = base64Img;
-            document.getElementById('logoApp').src = base64Img;
-            document.getElementById('faviconApp').href = base64Img;
-            localStorage.setItem('tallerData3Semanas', JSON.stringify(appData));
         };
-        reader.readAsDataURL(file);
-    }
-}
 
-function addMuroPost() {
-    let nombre = document.getElementById('muroNombre').value.trim();
-    let mensaje = document.getElementById('muroMensaje').value.trim();
+        let currentActiveDay = 0;
 
-    if(!nombre || !mensaje) {
-        alert("Por favor escribe tu nombre y mensaje.");
-        return;
-    }
+        document.addEventListener('DOMContentLoaded', () => {
+            renderDaySelector();
+            loadDayContent(0);
+            fetchDataFromSheets();
+        });
 
-    if(!appData.muroPosts) appData.muroPosts = [];
-    appData.muroPosts.unshift({ nombre, mensaje, fecha: new Date().toLocaleDateString() });
+        async function fetchDataFromSheets() {
+            const url = appData.googleSheetsUrl || googleSheetsUrl;
+            if (!url) return;
+            try {
+                const res = await fetch(url);
+                const data = await res.json();
+                if (data.muro) {
+                    appData.muroPosts = data.muro.reverse();
+                    renderMuroPosts();
+                }
+            } catch (e) {
+                console.log("Cargando datos locales.");
+            }
+        }
 
-    localStorage.setItem('tallerData3Semanas', JSON.stringify(appData));
-    renderMuroPosts();
+        function renderDaySelector() {
+            const selector = document.getElementById('daySelector');
+            if(!selector) return;
+            selector.innerHTML = '';
+            appData.days.forEach((day, index) => {
+                const opt = document.createElement('option');
+                opt.value = index;
+                opt.textContent = day.nombreDia || `Día ${index + 1}`;
+                selector.appendChild(opt);
+            });
+        }
 
-    document.getElementById('muroNombre').value = '';
-    document.getElementById('muroMensaje').value = '';
-}
+        function loadDayContent(index) {
+            currentActiveDay = parseInt(index);
+            const data = appData.days[currentActiveDay];
 
-function renderMuroPosts() {
-    let container = document.getElementById('muroPostsContainer');
-    container.innerHTML = '';
-    if(!appData.muroPosts || appData.muroPosts.length === 0) {
-        container.innerHTML = `<p class="col-span-2 text-center text-xs text-gray-500 italic py-4">Aún no hay publicaciones en el muro. ¡Sé la primera en escribir!</p>`;
-        return;
-    }
-    appData.muroPosts.forEach(post => {
-        let card = document.createElement('div');
-        card.className = "bg-white p-4 rounded-xl border border-[#EAE1D7] shadow-sm";
-        card.innerHTML = `
-            <div class="flex items-center justify-between">
-                <h4 class="font-bold text-sm text-[#8C3A1D]">${post.nombre}</h4>
-                <span class="text-[10px] text-gray-400">${post.fecha || ''}</span>
-            </div>
-            <p class="text-xs text-gray-700 mt-1 whitespace-pre-line">${post.mensaje}</p>
-        `;
-        container.appendChild(card);
-    });
-}
+            const headerT = appData.headerTitulo || "REUNIÓN DE MUJERES";
+            const headerS = appData.headerSubtitulo || "Creadas para sentir";
+
+            if(appData.logoSrc) {
+                document.getElementById('logoApp').src = appData.logoSrc;
+                document.getElementById('faviconApp').href = appData.logoSrc;
+            }
+
+            document.getElementById('headerTitulo').textContent = headerT;
+            document.getElementById('headerSubtitulo').textContent = headerS;
+            document.getElementById('dispTitulo').textContent = data.titulo || headerT;
+            document.getElementById('dispSubtitulo').textContent = data.subtitulo || headerS;
+
+            document.getElementById('muroTituloDisp').textContent = appData.muroTitulo || "Muro de Bendiciones";
+            document.getElementById('muroSubtituloDisp').textContent = appData.muroSubtitulo || "Deja un mensaje o petición para el grupo de mujeres";
+
+            document.getElementById('dispTituloReflexion').innerHTML = `<i class="fa-solid fa-book-open-reader"></i> ${appData.tituloReflexion || 'Reflexión'}`;
+            document.getElementById('dispTituloOracion').innerHTML = `<i class="fa-solid fa-hands-praying"></i> ${appData.tituloOracion || 'Oración del Día'}`;
+            document.getElementById('dispTituloPractica').innerHTML = `<i class="fa-solid fa-shoe-prints"></i> ${appData.tituloPractica || 'Aplicación Práctica del Día'}`;
+            document.getElementById('dispTituloJournaling').innerHTML = `<i class="fa-solid fa-feather-pointed"></i> ${appData.tituloJournaling || 'Manos a la obra (journaling)'}`;
+
+            document.getElementById('btnGuardarResp').innerHTML = `<i class="fa-solid fa-paper-plane"></i> ${appData.btnGuardarText || 'Enviar Mis Respuestas'}`;
+            document.getElementById('btnDescargarResp').innerHTML = `<i class="fa-solid fa-download"></i> ${appData.btnDescargarText || 'Descargar Copia'}`;
+
+            document.getElementById('dispNombreDia').textContent = data.nombreDia;
+            document.getElementById('dispFecha').textContent = data.fecha;
+            document.getElementById('dispUbicacion').textContent = data.ubicacion || "CALLE ZIGIA 28, MADRID";
+
+            document.getElementById('dispAudioTitulo').textContent = data.audioTitulo;
+            document.getElementById('dispAudioLink').href = data.audioLink || "#";
+
+            document.getElementById('dispVersiculo').textContent = `"${data.versiculo}"`;
+            document.getElementById('dispCita').textContent = `— ${data.cita}`;
+            document.getElementById('dispReflexion').textContent = data.reflexion;
+            document.getElementById('dispOracion').textContent = data.oracion;
+
+            const practicaBox = document.getElementById('dispPracticaContainer');
+            if (data.mostrarPractica && data.practica) {
+                practicaBox.classList.remove('hidden');
+                document.getElementById('dispPractica').textContent = data.practica;
+            } else {
+                practicaBox.classList.add('hidden');
+            }
+
+            document.getElementById('dispJournalingDesc').textContent = data.journalingDesc || "Tómate unos minutos en silencio para reflexionar.";
+            document.getElementById('dispPieIzquierda').textContent = data.pieIzquierda || "TALLER DEVOCIONAL";
+            document.getElementById('dispPieDerecha').textContent = data.pieDerecha || "Creadas con amor";
+
+            renderQuestions();
+        }
+
+        function renderQuestions() {
+            const container = document.getElementById('dynamicQuestionsList');
+            container.innerHTML = '';
+            const day = appData.days[currentActiveDay];
+            const savedAns = JSON.parse(localStorage.getItem(`ans_day_${currentActiveDay}`)) || {};
+
+            day.questions.forEach((q, idx) => {
+                const div = document.createElement('div');
+                div.innerHTML = `
+                    <label class="block font-semibold text-sm mb-1 text-[#3D2D27]">${idx + 1}. ${q}</label>
+                    <textarea id="ans_${idx}" rows="3" class="w-full p-3 text-sm bg-[#F7F3EE] border border-[#C4A792]/50 rounded-lg focus:outline-none focus:border-[#8C3A1D]" placeholder="Escribe tu respuesta aquí...">${savedAns[idx] || ''}</textarea>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        async function saveAndSendToSheets() {
+            const day = appData.days[currentActiveDay];
+            const answers = {};
+            day.questions.forEach((q, idx) => {
+                answers[idx] = document.getElementById(`ans_${idx}`).value;
+            });
+            localStorage.setItem(`ans_day_${currentActiveDay}`, JSON.stringify(answers));
+
+            const url = appData.googleSheetsUrl || googleSheetsUrl;
+            if (url) {
+                try {
+                    await fetch(url, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            fecha: new Date().toLocaleString(),
+                            devocional: day.nombreDia,
+                            respuestas: answers
+                        })
+                    });
+                    alert('¡Tus respuestas han sido enviadas con éxito!');
+                } catch(e) {
+                    alert('Respuestas guardadas localmente en tu dispositivo.');
+                }
+            } else {
+                alert('¡Respuestas guardadas localmente!');
+            }
+        }
+
+        async function addMuroPost() {
+            const nombre = document.getElementById('muroNombre').value.trim();
+            const mensaje = document.getElementById('muroMensaje').value.trim();
+
+            if (!nombre || !mensaje) {
+                alert("Por favor completa tu nombre y el mensaje.");
+                return;
+            }
+
+            const newPost = { nombre, mensaje, fecha: "Ahora mismo" };
+            appData.muroPosts.unshift(newPost);
+            renderMuroPosts();
+
+            document.getElementById('muroNombre').value = '';
+            document.getElementById('muroMensaje').value = '';
+
+            const url = appData.googleSheetsUrl || googleSheetsUrl;
+            if (url) {
+                try {
+                    await fetch(url, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            type: 'addMuro',
+                            nombre: nombre,
+                            mensaje: mensaje
+                        })
+                    });
+                } catch(e) {
+                    console.log("No se pudo sincronizar el muro.");
+                }
+            }
+        }
+
+        function renderMuroPosts() {
+            const container = document.getElementById('muroPostsContainer');
+            if (!container) return;
+            container.innerHTML = '';
+
+            if (appData.muroPosts.length === 0) {
+                container.innerHTML = `<p class="text-center text-gray-500 text-sm col-span-2">Aún no hay publicaciones en el muro. ¡Sé la primera en escribir!</p>`;
+                return;
+            }
+
+            appData.muroPosts.forEach(post => {
+                const card = document.createElement('div');
+                card.className = "bg-white p-4 rounded-xl border border-[#EAE1D7] shadow-sm text-left space-y-1";
+                card.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <h4 class="font-bold text-sm text-[#8C3A1D]">${post.nombre}</h4>
+                        <span class="text-[10px] text-gray-400">${post.fecha || ''}</span>
+                    </div>
+                    <p class="text-xs text-[#3D2D27] leading-relaxed">${post.mensaje}</p>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function downloadAnswers() {
+            const day = appData.days[currentActiveDay];
+            const savedAns = JSON.parse(localStorage.getItem(`ans_day_${currentActiveDay}`)) || {};
+
+            let content = `DEVOCIONAL: ${day.nombreDia}\nFECHA: ${day.fecha}\n\n`;
+            day.questions.forEach((q, idx) => {
+                content += `${idx + 1}. ${q}\nRESPUESTA: ${savedAns[idx] || 'Sin respuesta'}\n\n`;
+            });
+
+            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `${day.nombreDia}_Respuestas.txt`;
+            a.click();
+        }
+
+        function switchView(view) {
+            document.getElementById('viewParticipante').classList.add('hidden');
+            document.getElementById('viewMuro').classList.add('hidden');
+            document.getElementById('viewAdmin').classList.add('hidden');
+
+            if (view === 'participante') document.getElementById('viewParticipante').classList.remove('hidden');
+            if (view === 'muro') {
+                document.getElementById('viewMuro').classList.remove('hidden');
+                fetchDataFromSheets();
+            }
+            if (view === 'admin') document.getElementById('viewAdmin').classList.remove('hidden');
+        }
+
+        function solicitarAccesoAdmin() {
+            let password = prompt("Ingresa la contraseña de administradora:");
+            if (password === CLAVE_ADMIN) {
+                switchView('admin');
+            } else if (password !== null) {
+                alert("Contraseña incorrecta.");
+            }
+        }
     </script>
 </body>
 </html>
